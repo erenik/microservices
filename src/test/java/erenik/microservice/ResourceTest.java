@@ -2,7 +2,9 @@ package erenik.microservice;
   
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 
@@ -35,9 +37,14 @@ public class ResourceTest {
      */
     @Test
     public void testGetIt() {
-        String responseMsg = target.path("myresource").request().get(String.class);
+        String responseMsg = target.path("resource").request().get(String.class);
         System.out.println("Output: "+responseMsg);
         assert(responseMsg.length() > 1);
-//        assertEquals("Got it!", responseMsg);
+        
+        // Send a put request.
+        Response r2 = target.path("resource").request().put(Entity.text("Very cool"));
+        System.out.println("r2: "+r2);
+        
+//        assertEquals("", responseMsg);
     }
 }
