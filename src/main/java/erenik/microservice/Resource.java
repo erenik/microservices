@@ -104,31 +104,16 @@ public class Resource
    // @Path("/result")
     public Response putContainer(String jsonInput) 
     {    	
-    	System.out.println("PUT RECEIVED: "+jsonInput);
-    	
-    	// Parse it.
-    	JsonObject parsedInputJsonData = JsonHelper.GetJsonFromString(jsonInput);
-    	
-   // 	JsonHelper.PrintData(parsedInputJsonData);
-    	
-    	/// Check current saved data.
-    	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(jsonPath);
-    //	JsonHelper.PrintData(loadedJsonData);
+    	// Use JsonHelper.PrintData to debug.
+    	JsonObject parsedInputJsonData = JsonHelper.GetJsonFromString(jsonInput);    	// Parse it.  	
+     	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(jsonPath); // Load saved data from file.
+    	JsonObjectBuilder builder = Json.createObjectBuilder();    	/// Create new JSON
+    	JsonHelper.AddObjects(builder, loadedJsonData); // Add old objects
+    	JsonHelper.AddObjects(builder, parsedInputJsonData); // And the new parsed contents  
+    	JsonObject resultingObject = builder.build();    	// finalize it
+    	WriteFileContents(jsonPath, resultingObject.toString());    	// Write it to file again.    	
 
-    	/// Create new JSON
-    	JsonObjectBuilder builder = Json.createObjectBuilder();
-  //  	System.out.println("Adding old objects");
-    	JsonHelper.AddObjects(builder, loadedJsonData);
-  //  	System.out.println("Adding new objects");
-    	JsonHelper.AddObjects(builder, parsedInputJsonData);
-    
-    	// finalize JSON
-    	JsonObject resultingObject = builder.build();
- //   	System.out.println("Resulting JSON: "+resultingObject.toString());
-    	// Write it to file again.
-    	WriteFileContents(jsonPath, resultingObject.toString());
-    	
-    	/// Send respond to user.
+    	/// Send response to the user.
 		Response r;
 		try {
 	    	URI uri = new URI("yeah");

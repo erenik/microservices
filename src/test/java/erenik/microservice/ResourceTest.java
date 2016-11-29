@@ -39,13 +39,15 @@ public class ResourceTest {
     public void testGetIt() 
     {
     	TestGet();
+    	System.out.println();
         // Send a put request.
-        Response r2 = target.path("resource").request().put(Entity.text("Very cool"));
-        System.out.println("r2: "+r2);
+    	TestPut("Very cool");
+    	TestGet();
 
         // Add some random resources.
         for (int i = 0; i < 3; ++i)
         {
+        	System.out.println();
         	TestPut(Resource.RandomResourceAndAmountJSON());
         	TestGet();
         }
@@ -60,6 +62,6 @@ public class ResourceTest {
     void TestPut(String contents)
     {
     	Response r = target.path("resource").request().put(Entity.json(contents));
-    	System.out.println("PUT response: "+r);
+    	System.out.println("PUT \""+contents+"\", response: "+r);
     }
 }
