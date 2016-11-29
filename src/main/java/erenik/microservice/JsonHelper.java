@@ -20,7 +20,7 @@ public class JsonHelper {
 	{
 		Set<String> keys = jsonObject.keySet();
     	Collection<JsonValue> values = jsonObject.values();
-    	System.out.println("Adding items: "+jsonObject);
+    //	System.out.println("Adding items: "+jsonObject);
     	for (int i = 0; i < keys.size(); ++i)
     	{
     		String key = keys.toArray()[i].toString();

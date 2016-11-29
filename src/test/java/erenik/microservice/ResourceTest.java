@@ -43,22 +43,23 @@ public class ResourceTest {
         Response r2 = target.path("resource").request().put(Entity.text("Very cool"));
         System.out.println("r2: "+r2);
 
-        for (int i = 0; i < 5; ++i)
+        // Add some random resources.
+        for (int i = 0; i < 3; ++i)
         {
         	TestPut(Resource.RandomResourceAndAmountJSON());
+        	TestGet();
         }
-    	TestGet();
 
 //        assertEquals("", responseMsg);
     }
     void TestGet()
     {
     	String responseMsg = target.path("resource").request().get(String.class);
-        System.out.println("Output: "+responseMsg);
+        System.out.println("GET response: "+responseMsg);
     }
     void TestPut(String contents)
     {
     	Response r = target.path("resource").request().put(Entity.json(contents));
-    	System.out.println("r: "+r);
+    	System.out.println("PUT response: "+r);
     }
 }

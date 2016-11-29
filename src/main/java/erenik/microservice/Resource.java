@@ -124,7 +124,7 @@ public class Resource
     
     	// finalize JSON
     	JsonObject resultingObject = builder.build();
-    	System.out.println("Resulting JSON: "+resultingObject.toString());
+ //   	System.out.println("Resulting JSON: "+resultingObject.toString());
     	// Write it to file again.
     	WriteFileContents(jsonPath, resultingObject.toString());
     	
