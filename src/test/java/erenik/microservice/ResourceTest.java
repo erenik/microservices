@@ -36,15 +36,29 @@ public class ResourceTest {
      * Test to see that the message "Got it!" is sent in the response.
      */
     @Test
-    public void testGetIt() {
-        String responseMsg = target.path("resource").request().get(String.class);
-        System.out.println("Output: "+responseMsg);
-        assert(responseMsg.length() > 1);
-        
+    public void testGetIt() 
+    {
+    	TestGet();
         // Send a put request.
         Response r2 = target.path("resource").request().put(Entity.text("Very cool"));
         System.out.println("r2: "+r2);
-        
+
+        for (int i = 0; i < 5; ++i)
+        {
+        	TestPut(Resource.RandomResourceAndAmountJSON());
+        }
+    	TestGet();
+
 //        assertEquals("", responseMsg);
+    }
+    void TestGet()
+    {
+    	String responseMsg = target.path("resource").request().get(String.class);
+        System.out.println("Output: "+responseMsg);
+    }
+    void TestPut(String contents)
+    {
+    	Response r = target.path("resource").request().put(Entity.json(contents));
+    	System.out.println("r: "+r);
     }
 }

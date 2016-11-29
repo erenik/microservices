@@ -1,5 +1,6 @@
 package erenik.microservice;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,6 +18,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -82,15 +84,15 @@ public class Resource
      * @return String that will be returned as a text/plain response.
      */
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public String getIt() 
     {	    	    	
     	// Working.
     	return GetFileContents(jsonPath);
     }
 
-	Random random = new Random(System.nanoTime());
-    String RandomResourceStr()
+	static Random random = new Random(System.nanoTime());
+    static String RandomResourceStr()
     {
     	String[] resourceStr = {"Coal", "Iron", "Steel", "Gold", "Silver", "Copper", "Tin", "Bronze",
     			"Wood", "Food", "Stone", "Money"};
@@ -98,35 +100,31 @@ public class Resource
     }
     /// Put! requests. Assume they put something useful.
     @PUT
-    public Response putContainer() 
-    {
-    	System.out.println("PUT RECEIVED");
-    	/// Check current saved data.    	
-    	JsonObject obj = GetJson(jsonPath);
-    	Set<String> keys = obj.keySet();
-    	Collection<JsonValue> values = obj.values();
-    	for (int i = 0; i < keys.size(); ++i)
-    	{
-    		String key = keys.toArray()[i].toString();
-    		System.out.println("Keys: "+key);
-    	}
+    @Consumes(MediaType.APPLICATION_JSON)
+   // @Path("/result")
+    public Response putContainer(String jsonInput) 
+    {    	
+    	System.out.println("PUT RECEIVED: "+jsonInput);
+    	
+    	// Parse it.
+    	JsonObject parsedInputJsonData = JsonHelper.GetJsonFromString(jsonInput);
+    	
+   // 	JsonHelper.PrintData(parsedInputJsonData);
+    	
+    	/// Check current saved data.
+    	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(jsonPath);
+    //	JsonHelper.PrintData(loadedJsonData);
 
     	/// Create new JSON
     	JsonObjectBuilder builder = Json.createObjectBuilder();
-    	// Add all old items first.
-    	System.out.println("Adding old items.");
-    	for (int i = 0; i < keys.size(); ++i)
-    	{
-    		String key = keys.toArray()[i].toString();
-    		String value = obj.getString(key);
-        	System.out.println("Adding old items: key "+key+" val: "+value);
-    		builder.add(key,  value);
-    	}
-    	// Add the new randomly generated resouce?
-    	builder.add(RandomResourceStr(), random.nextInt(99)+"");
+  //  	System.out.println("Adding old objects");
+    	JsonHelper.AddObjects(builder, loadedJsonData);
+  //  	System.out.println("Adding new objects");
+    	JsonHelper.AddObjects(builder, parsedInputJsonData);
+    
     	// finalize JSON
     	JsonObject resultingObject = builder.build();
-    	System.out.println("Result: \n"+resultingObject.toString());
+    	System.out.println("Resulting JSON: "+resultingObject.toString());
     	// Write it to file again.
     	WriteFileContents(jsonPath, resultingObject.toString());
     	
@@ -143,27 +141,14 @@ public class Resource
 		}
         return r;
     }
-	private JsonObject GetJson(String jsonPath2) 
+	
+	public static String RandomResourceAndAmountJSON()
 	{
-		InputStream is;
-		try {
-			is = new FileInputStream(jsonPath);
-			JsonReader rdr = Json.createReader(is);
-			JsonObject obj = rdr.readObject();
-			is.close();
-			return obj;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		System.out.println("Failed");
-		return null;
+		Random r = new Random();
+		int quantity = r.nextInt() % 2000;
+		if (quantity < 0)
+			quantity *= -1;
+		return "{\""+RandomResourceStr()+"\":\""+quantity+"\"}";
 	}
     
 }
