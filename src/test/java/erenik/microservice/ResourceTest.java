@@ -38,6 +38,13 @@ public class ResourceTest {
     @Test
     public void testGetIt() 
     {
+    	TestGetPrices();
+    	TestPutPrices(Resource.RandomResourceAndAmountJSON());
+    	TestGetPrices();
+
+    	if (true)
+    		return;
+    	
     	TestGet();
     	System.out.println();
         // Send a put request.
@@ -54,10 +61,21 @@ public class ResourceTest {
 
 //        assertEquals("", responseMsg);
     }
+    void TestGetPrices()
+    {    	
+    	String responseMsg = target.path("resourcePrices").request().get(String.class);
+        System.out.println("GET /resourcePrices response: "+responseMsg);
+    }
+    void TestPutPrices(String contents)
+    {
+    	Response r = target.path("resourcePrices").request().put(Entity.json(contents));
+    	System.out.println("PUT /resourcePrices \""+contents+"\", response: "+r);
+    }
+
     void TestGet()
     {
     	String responseMsg = target.path("resource").request().get(String.class);
-        System.out.println("GET response: "+responseMsg);
+        System.out.println("GET /resource response: "+responseMsg);
     }
     void TestPut(String contents)
     {

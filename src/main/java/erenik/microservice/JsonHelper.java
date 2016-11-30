@@ -14,7 +14,11 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
+import org.bson.Document;
+
 public class JsonHelper {
+
+	static String defaultFilePath = "resources.json";
 
 	static void AddObjects(JsonObjectBuilder toBuilder, JsonObject jsonObject)
 	{
@@ -27,6 +31,18 @@ public class JsonHelper {
     		String value = jsonObject.getString(key);
 //        	System.out.println("Adding old items: key "+key+" val: "+value);
         	toBuilder.add(key,  value);
+    	}
+	}
+	public static void AddObjects(Document doc, JsonObject jsonObject) {
+		// TODO Auto-generated method stub
+		Set<String> keys = jsonObject.keySet();
+    	Collection<JsonValue> values = jsonObject.values();
+    //	System.out.println("Adding items: "+jsonObject);
+    	for (int i = 0; i < keys.size(); ++i)
+    	{
+    		String key = keys.toArray()[i].toString();
+    		String value = jsonObject.getString(key);
+    		doc.append(key, value);
     	}
 	}
 	public static JsonObject GetJsonFromFile(String jsonPath) 

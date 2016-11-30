@@ -24,6 +24,7 @@
 		<version>1.0</version>
 	</dependency>
 	
+	<!--  For the JSON binary required for actually testing it, not just compiling it -->
 	<dependency>  
 	   <groupId>org.glassfish</groupId> 
 	   <artifactId>javax.json</artifactId> 
@@ -31,7 +32,13 @@
 	   <type>jar</type>
 	   <scope>test</scope>
 	</dependency>
-	
+
+	<!-- For MongoDB integration -->	
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver</artifactId>
+        <version>3.4.0</version>
+    </dependency>
 	
 	<!--  For Unit testing  -->  
 	<dependency>
