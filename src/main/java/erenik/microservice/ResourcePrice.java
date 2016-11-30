@@ -17,7 +17,6 @@ import org.bson.conversions.Bson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -25,6 +24,7 @@ import com.mongodb.client.MongoDatabase;
 
 @Path("resourcePrices")
 public class ResourcePrice {
+	static String resourcePriceListPath = "resourcePrices.json"; // Used for back-up file save/load in-case DB fails.
     /// Getter for prices.
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -37,8 +37,6 @@ public class ResourcePrice {
     		FindIterable<Document> docs = resources.find();
     		MongoCursor<Document> iterator = docs.iterator();
     		Document doc = iterator.next();
-  //  		System.out.println("doc: "+doc);
-//    		System.out.println("Connect to database successfully");
     		return doc.toJson();
     	}catch(Exception e){
     		e.printStackTrace();
@@ -46,7 +44,6 @@ public class ResourcePrice {
 		// Working.
     	return FileHelper.GetFileContents(JsonHelper.defaultFilePath);
     }
-    
     /// Put! requests. Assume they put something useful.
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -55,49 +52,33 @@ public class ResourcePrice {
     {    	
     	JsonObject parsedInputJsonData = JsonHelper.GetJsonFromString(jsonInput);    	// Parse it.  	
 
-    	if (true) // Try and put into MongoDB
-    	{
-    		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-    		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-    		MongoCollection<Document> resources = mdb.getCollection("resourcePrices");
-    		FindIterable<Document> docs = resources.find();
-    		MongoCursor<Document> iterator = docs.iterator();
-    		Document doc = iterator.next();
-    		JsonObject fromDB = JsonHelper.GetJsonFromString(doc.toJson());
-    		JsonObjectBuilder builder = Json.createObjectBuilder();
+    	// Try and put into MongoDB
+		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
+		MongoDatabase mdb = mongoClient.getDatabase("labapi");
+		MongoCollection<Document> resources = mdb.getCollection("resourcePrices");
+		FindIterable<Document> docs = resources.find();
+		MongoCursor<Document> iterator = docs.iterator();
+		Document doc = iterator.next();
+		JsonObject fromDB = JsonHelper.GetJsonFromString(doc.toJson());
+		JsonObjectBuilder builder = Json.createObjectBuilder();
 
-    		JsonHelper.AddObjects(doc, parsedInputJsonData); // Add more key-value pairs into the open document.
-    		System.out.println("Updated doc: "+doc.toJson());
-    		System.out.println("WriteConcern: "+mongoClient.getWriteConcern());
-    		// try insert the new updated document.
-    		try {
-    			DBObject filterDB = new BasicDBObject();
-    			filterDB.put( "name", "ResourcePriceList" );
-    			resources.replaceOne((Bson) filterDB, doc);
-    		} catch (Exception e)
-    		{
-    			System.out.println("Error "+e.toString());
-    		}
-    		System.out.println("Inseeeerting");
-    		
-    		
-//    		JsonHelper.AddObjects(builder, fromDB);
-  //  		JsonHelper.AddObjects(builder, parsedInputJsonData);
-        	JsonObject resultingObject = builder.build();    	// finalize it
-        	// Push it to DB, somehow..
-        	String result = resultingObject.toString();
-        	doc.parse(result);
-    		return Response.ok().build();
-    	}
-    	// Save to file
-     	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(JsonHelper.defaultFilePath); // Load saved data from file.
-    	JsonObjectBuilder builder = Json.createObjectBuilder();    	/// Create new JSON
-    	JsonHelper.AddObjects(builder, loadedJsonData); // Add old objects
-    	JsonHelper.AddObjects(builder, parsedInputJsonData); // And the new parsed contents  
-    	JsonObject resultingObject = builder.build();    	// finalize it
-    	FileHelper.WriteFileContents(JsonHelper.defaultFilePath, resultingObject.toString());    	// Write it to file again.    	
-        return Response.ok().build();    	/// Send response to the user.
+		JsonHelper.AddObjects(doc, parsedInputJsonData); // Add more key-value pairs into the open document.
+		// try insert the new updated document.
+		try {
+			DBObject filterDB = new BasicDBObject();
+			filterDB.put( "name", "ResourcePriceList" );
+			resources.replaceOne((Bson) filterDB, doc);
+			return Response.ok().build();
+		} catch (Exception e)
+		{
+			System.out.println("Error "+e.toString());
+			// Save it locally to file in-case DB connection isn't working.
+	     	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(resourcePriceListPath); // Load saved data from file.
+	    	JsonHelper.AddObjects(builder, loadedJsonData); // Add old objects
+	    	JsonHelper.AddObjects(builder, parsedInputJsonData); // And the new parsed contents  
+	    	JsonObject resultingObject = builder.build();    	// finalize it
+	    	FileHelper.WriteFileContents(resourcePriceListPath, resultingObject.toString());    	// Write it to file again.    	
+	        return Response.ok().build();    	/// Send response to the user.
+		}
     }
-
-
 }
