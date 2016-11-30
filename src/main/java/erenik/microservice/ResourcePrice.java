@@ -31,11 +31,9 @@ public class ResourcePrice {
     public String getPrices() 
     {	    	   
     	try{
-    		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-    		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-    		MongoCollection<Document> resources = mdb.getCollection("resourcePrices");
-    		FindIterable<Document> docs = resources.find();
-    		MongoCursor<Document> iterator = docs.iterator();
+    		MongoCursor<Document> iterator = MongoHelper.GetDocumentIterator("resourcePrices");
+    		if (iterator.hasNext() == false)
+    			return null;
     		Document doc = iterator.next();
     		return doc.toJson();
     	}catch(Exception e){

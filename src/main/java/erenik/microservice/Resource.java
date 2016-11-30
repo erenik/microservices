@@ -46,38 +46,11 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
  
 /**
- * Root resource (exposed at "resource" path)
+ * Helper class for other classes. Used initially to test RESTlessness but changed later.
  */
-@Path("resource")
 public class Resource 
 {
 	static int numRequests = 0;
-
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getIt() 
-    {	    	   
-    	try{
-    		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-    		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-    		MongoCollection<Document> resources = mdb.getCollection("resources");
-    		FindIterable<Document> docs = resources.find();
-    		MongoCursor<Document> iterator = docs.iterator();
-    		Document doc = iterator.next();
-    		return doc.toJson();
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-		// Working.
-    	return FileHelper.GetFileContents(JsonHelper.defaultFilePath);
-    }
-
 	static Random random = new Random(System.nanoTime());
     static String RandomResourceStr()
     {
@@ -85,52 +58,7 @@ public class Resource
     			"Wood", "Food", "Stone", "Money"};
     	return resourceStr[random.nextInt(resourceStr.length) % resourceStr.length];	
     }
-    /// Put! requests. Assume they put something useful.
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-   // @Path("/result")
-    public Response putIt(String jsonInput) 
-    {    	
-    	
-    	JsonObject parsedInputJsonData = JsonHelper.GetJsonFromString(jsonInput);    	// Parse it.  	
 
-    	// Try and put into MongoDB
-		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-		MongoCollection<Document> resources = mdb.getCollection("resourcePrices");
-		FindIterable<Document> docs = resources.find();
-		MongoCursor<Document> iterator = docs.iterator();
-		Document doc = iterator.next();
-		Document doc2 = new Document();
-		JsonObject fromDB = JsonHelper.GetJsonFromString(doc.toJson());
-		JsonObjectBuilder builder = Json.createObjectBuilder();
-
-		JsonHelper.AddObjects(doc, parsedInputJsonData); // Add more key-value pairs into the open document.
-		// try insert the new updated document.
-		try {
-			DBObject filterDB = new BasicDBObject();
-			filterDB.put( "name", "ResourcePriceList" );
-			resources.replaceOne((Bson) filterDB, doc);
-			return Response.ok().build();
-		} catch (Exception e)
-		{
-			System.out.println("Error "+e.toString());
-	        return Response.ok().build();    	/// Send response to the user.
-		}
-/*
-    	
-    	// Use JsonHelper.PrintData to debug.
-    	JsonObject parsedInputJsonData = JsonHelper.GetJsonFromString(jsonInput);    	// Parse it.  	
-     	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(JsonHelper.defaultFilePath); // Load saved data from file.
-    	JsonObjectBuilder builder = Json.createObjectBuilder();    	/// Create new JSON
-    	JsonHelper.AddObjects(builder, loadedJsonData); // Add old objects
-    	JsonHelper.AddObjects(builder, parsedInputJsonData); // And the new parsed contents  
-    	JsonObject resultingObject = builder.build();    	// finalize it
-    	FileHelper.WriteFileContents(JsonHelper.defaultFilePath, resultingObject.toString());    	// Write it to file again.    	
-        return Response.ok().build();    	/// Send response to the user.
-    }
-  */
-    }
 	/// Returns e.g. {"Iron":"234"}
 	public static String RandomResourceAndAmountJSON()
 	{

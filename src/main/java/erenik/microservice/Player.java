@@ -36,11 +36,7 @@ public class Player
 	
 	List<String> GetAllPlayerNames()
 	{
-		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-		MongoCollection<Document> resources = mdb.getCollection("players");
-		FindIterable<Document> docs = resources.find();
-		MongoCursor<Document> iterator = docs.iterator();
+		MongoCursor<Document> iterator = MongoHelper.GetDocumentIterator("players");
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		String json;
 		// Build a single name-array with the names of all players.
@@ -71,13 +67,8 @@ public class Player
     public String getAllPlayers() 
     {	    	   
     	try{
-    		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-    		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-    		MongoCollection<Document> resources = mdb.getCollection("players");
-    		FindIterable<Document> docs = resources.find();
-    		MongoCursor<Document> iterator = docs.iterator();
+    		MongoCursor<Document> iterator = MongoHelper.GetDocumentIterator("players");
     		JsonObjectBuilder builder = Json.createObjectBuilder();
-    		String json;
     		// Build a single name-array with the names of all players.
     		JsonArrayBuilder nameArrayBuilder = Json.createArrayBuilder();
     		while(iterator.hasNext())
@@ -102,9 +93,7 @@ public class Player
     public String getPlayerByName(@PathParam("name") String name) 
     {	    	   
     	try{
-    		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-    		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-    		MongoCollection<Document> resources = mdb.getCollection("players");
+			MongoCollection<Document> resources = MongoHelper.GetCollection("players");
     		FindIterable<Document> docs = resources.find(Filters.eq("name",name));
     		MongoCursor<Document> iterator = docs.iterator();
     		if (iterator.hasNext() == false)
@@ -145,9 +134,7 @@ public class Player
     public Response postIt(String jsonInput) 
     {    		
     	// Try and put into MongoDB
-		MongoClient mongoClient = MongoHelper.SetupMongoDBClient();			// Now connect to your databases
-		MongoDatabase mdb = mongoClient.getDatabase("labapi");
-		MongoCollection<Document> resources = mdb.getCollection("players");
+		MongoCollection<Document> resources = MongoHelper.GetCollection("players");
 		FindIterable<Document> docs = resources.find();
 		Document doc = Document.parse(jsonInput);
 		/// Check if it already exists?
@@ -172,9 +159,7 @@ public class Player
     {
 		// Try and delete all existing players.
 		try {
-			MongoClient mongoClient = MongoHelper.SetupMongoDBClient();
-			MongoDatabase mdb = mongoClient.getDatabase("labapi");
-			MongoCollection<Document> resources = mdb.getCollection("players");
+			MongoCollection<Document> resources = MongoHelper.GetCollection("players");
 			List<String> name = GetAllPlayerNames();
 			for (int i = 0; i < name.size(); ++i)
 			{				

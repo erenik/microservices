@@ -28,9 +28,9 @@
 	<dependency>  
 	   <groupId>org.glassfish</groupId> 
 	   <artifactId>javax.json</artifactId> 
-	   <version>1.0</version> 
+	   <version>1.0.4</version> 
 	   <type>jar</type>
-	   <scope>test</scope>
+<!-- <scope>test</scope> -->
 	</dependency>
 
 	<!-- For MongoDB integration -->	

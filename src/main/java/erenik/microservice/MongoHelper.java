@@ -9,7 +9,9 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 public class MongoHelper {
@@ -25,22 +27,14 @@ public class MongoHelper {
 		List<MongoCredential> lmc = new ArrayList<MongoCredential>(); 
 		lmc.add(creds);
 		ServerAddress sa = new ServerAddress(mongoDBUrl, 13938);
-//		System.out.println("Yeah.");
 		try {
 			mc = new MongoClient(sa, lmc,  MongoClientOptions.builder().serverSelectionTimeout(5000).build());
 		}catch (Exception e)
 		{
 			System.out.println(e.toString());
-		}
-		
-//		mc = new MongoClient( new MongoClientURI(mongoDBUrl), creds);
-
-//		MongoCredential mc = new MongoCredential();
-	//	mongoClient.
-//		MongoClient(ServerAddress addr, List<MongoCredential> credentialsList)		mongoClient.
+		}		
 		return mc;
 	}
-	
 	
 	public static MongoCollection<Document> GetCollection(String byName)
 	{
@@ -48,6 +42,12 @@ public class MongoHelper {
 		MongoDatabase mdb = mongoClient.getDatabase("labapi");
 		MongoCollection<Document> resources = mdb.getCollection(byName);
 		return resources;
+	}
+	public static MongoCursor<Document> GetDocumentIterator(String forCollection)
+	{
+		MongoCollection<Document> resources = MongoHelper.GetCollection(forCollection);
+		FindIterable<Document> docs = resources.find();
+		return docs.iterator();
 	}
 	
 }
