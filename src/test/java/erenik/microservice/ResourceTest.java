@@ -38,12 +38,15 @@ public class ResourceTest {
     @Test
     public void testGetIt() 
     {
+    	// Not relevant. Tested in ResourcePriceTest.java.
+    	/*
     	TestGetPrices();
     	TestPutPrices(Resource.RandomResourceAndAmountJSON());
     	TestGetPrices();
 
     	if (true)
     		return;
+    	/// Below not really relevant anymore.
     	
     	TestGet();
     	System.out.println();
@@ -58,7 +61,7 @@ public class ResourceTest {
         	TestPut(Resource.RandomResourceAndAmountJSON());
         	TestGet();
         }
-
+*/
 //        assertEquals("", responseMsg);
     }
     void TestGetPrices()

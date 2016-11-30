@@ -38,6 +38,7 @@ public class ResourcePriceTest {
     @Test
     public void testGetIt() 
     {
+    	System.out.println("\nTesting /resourcePrices");
     	TestGetPrices();
     	TestPutPrices(Resource.RandomResourceAndAmountJSON());
     	TestGetPrices();
