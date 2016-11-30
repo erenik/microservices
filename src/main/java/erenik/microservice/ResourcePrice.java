@@ -12,7 +12,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
@@ -65,8 +68,18 @@ public class ResourcePrice {
 
     		JsonHelper.AddObjects(doc, parsedInputJsonData); // Add more key-value pairs into the open document.
     		System.out.println("Updated doc: "+doc.toJson());
+    		System.out.println("WriteConcern: "+mongoClient.getWriteConcern());
     		// try insert the new updated document.
-    		resources.insertOne(doc);
+    		try {
+    			DBObject filterDB = new BasicDBObject();
+    			filterDB.put( "name", "ResourcePriceList" );
+    			resources.replaceOne((Bson) filterDB, doc);
+    		} catch (Exception e)
+    		{
+    			System.out.println("Error "+e.toString());
+    		}
+    		System.out.println("Inseeeerting");
+    		
     		
 //    		JsonHelper.AddObjects(builder, fromDB);
   //  		JsonHelper.AddObjects(builder, parsedInputJsonData);
