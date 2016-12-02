@@ -2,11 +2,13 @@ package erenik.microservice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -61,7 +63,7 @@ public class Player
 		return false;
 	}
 	
-    /// Getter for prices.
+    /// Getter for players.
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllPlayers() 
@@ -100,6 +102,40 @@ public class Player
     			return null;
     		Document doc = iterator.next();
     		return doc.toJson();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	return null;
+    }
+    /// Getter for resources of a specific player.
+    @GET
+    @Path("{name}/{resource}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPlayerResource(@PathParam("name") String name, @PathParam("resource") String resource) 
+    {	    	   
+    	try{
+			MongoCollection<Document> resources = MongoHelper.GetCollection("players");
+    		FindIterable<Document> docs = resources.find(Filters.eq("name",name));
+    		MongoCursor<Document> iterator = docs.iterator();
+    		if (iterator.hasNext() == false)
+    			return null;
+    		Document doc = iterator.next();
+    		JsonObject obj = JsonHelper.GetJsonFromString(doc.toJson());
+    		Set<String> keys = obj.keySet();
+    		JsonObjectBuilder builder = Json.createObjectBuilder();
+    		for (int i = 0; i < keys.size(); ++i)
+    		{
+    			String key = (String) keys.toArray()[i];
+    			JsonValue val = obj.get(key);
+    			if (key.equals(resource))
+    			{
+    				// Return it.
+    				builder.add(key, val);
+    				return builder.build().toString();
+    			}    			
+//    			System.out.println(key + " : "+val.toString());
+    		}
+    		return null;
     	}catch(Exception e){
     		e.printStackTrace();
     	}

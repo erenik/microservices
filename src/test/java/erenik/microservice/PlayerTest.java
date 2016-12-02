@@ -41,12 +41,29 @@ public class PlayerTest {
     public void testGetIt() 
     {
     	System.out.println("\nTesting /players");
+    	
+    	// Try fetch 3 random resources from player Erenik.
+    	TestGet("erenik/"+Resource.RandomResourceStr());
+    	TestGet("erenik/"+Resource.RandomResourceStr());
+    	TestGet("erenik/"+Resource.RandomResourceStr());
     	TestGet();
     	TestDelete();
     	TestDelete("erenik");
     	TestGet("avignak");
     	TestGet("erenik");
-    	TestPost("{\"name\":\"erenik\","+Resource.RandomResourceAndAmountPair()+"}");
+    	String request = "{\"name\":\"erenik\",";
+    	int maxResourcesToAdd = 8;
+    	for (int i = 0; i < maxResourcesToAdd; ++i)
+    	{
+    		request += Resource.RandomResourceAndAmountPair();
+    		if (i < maxResourcesToAdd - 1)
+    		{
+    			request += ",";
+    		}
+    	}
+    	request += "}";
+    	// Old request: "{\"name\":\"erenik\","+Resource.RandomResourceAndAmountPair()+"}"
+    	TestPost(request);
     	TestPost("{\"name\":\"avignak\","+Resource.RandomResourceAndAmountPair()+"}");
     	TestGet();
     	TestGet("avignak");
@@ -69,7 +86,7 @@ public class PlayerTest {
     void TestPost(String contents)
     {
     	Response r = target.path("players").request().post(Entity.json(contents));
-    	System.out.println("PUT /players \""+contents+"\", response: "+r);
+    	System.out.println("POST /players \""+contents+"\", response: "+r);
     }
     void TestDelete()
     {
