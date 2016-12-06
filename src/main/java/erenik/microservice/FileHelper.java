@@ -4,8 +4,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * FileHelper class for writing and reading contents to a file on given path. Used only for local tests.
+ * @author Emil
+ */
 public class FileHelper {
 	static String jsonBase = "{\n}";
+	/**
+	 * Writes file contents to file at given path.
+	 * @param path
+	 * @param contents Contents to write to file.
+	 */
 	static void WriteFileContents(String path, String contents)
 	{
 		try {
@@ -19,6 +28,11 @@ public class FileHelper {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Reads contents of file at given path.
+	 * @param path
+	 * @return Returns the contents of the file at given path or null if it fails.
+	 */
 	static String GetFileContents(String path)
 	{
 		try {
@@ -35,14 +49,13 @@ public class FileHelper {
 		} catch (IOException e)
 		{
 			// Couldn't find it? Create it.
-			System.out.println("Couldn't find contents, creating JSON");
-			WriteFileContents(path, jsonBase);
+			System.out.println("Couldn't find file at path");
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "BAD";
+		return null;
 	}
 
 }

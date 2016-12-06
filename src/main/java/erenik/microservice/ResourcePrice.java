@@ -22,10 +22,20 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
+/**
+ * Class implementing the /resourcePrices/ url.
+ * @author Emil
+ */
 @Path("resourcePrices")
-public class ResourcePrice {
+public class ResourcePrice 
+{
+//	static String defaultFilePath = "resources.json";
 	static String resourcePriceListPath = "resourcePrices.json"; // Used for back-up file save/load in-case DB fails.
-    /// Getter for prices.
+    /**
+     * Implements GET requests for the base url /resourcePrices/. 
+     * Returns all prices in JSON format from the mongoDB database.
+     * @return String in JSON format.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getPrices() 
@@ -40,9 +50,14 @@ public class ResourcePrice {
     		e.printStackTrace();
     	}
 		// Working.
-    	return FileHelper.GetFileContents(JsonHelper.defaultFilePath);
+    	return FileHelper.GetFileContents(resourcePriceListPath);
     }
-    /// Put! requests. Assume they put something useful.
+    /**
+     * Implements PUT requests for the base url /resourcePrices/. 
+     * Any number of resources can be submitted, and their values will be put/updated in the database.
+     * @param jsonInput
+     * @return ok or noContent responses. noContent if it failed to connect and update the database values.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
    // @Path("/result")
@@ -71,12 +86,13 @@ public class ResourcePrice {
 		{
 			System.out.println("Error "+e.toString());
 			// Save it locally to file in-case DB connection isn't working.
-	     	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(resourcePriceListPath); // Load saved data from file.
+/*	     	JsonObject loadedJsonData = JsonHelper.GetJsonFromFile(resourcePriceListPath); // Load saved data from file.
 	    	JsonHelper.AddObjects(builder, loadedJsonData); // Add old objects
 	    	JsonHelper.AddObjects(builder, parsedInputJsonData); // And the new parsed contents  
 	    	JsonObject resultingObject = builder.build();    	// finalize it
 	    	FileHelper.WriteFileContents(resourcePriceListPath, resultingObject.toString());    	// Write it to file again.    	
-	        return Response.ok().build();    	/// Send response to the user.
+	    	*/
+	        return Response.noContent().build();    	/// Send response to the user.
 		}
     }
 }

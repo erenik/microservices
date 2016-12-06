@@ -8,8 +8,8 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
- * Hello world!
- *
+ * Main class for launching or testing the JAX-RS/web-server.
+ * @author Emil
  */
 public class Main 
 {
@@ -17,7 +17,8 @@ public class Main
     public static final String BASE_URI = "http://localhost:8080/myapp/";
 
     /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
+     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application. 
+     * By default it uses the resources in the package erenik.microservice.
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer() {
@@ -31,7 +32,7 @@ public class Main
     }
 
     /**
-     * Main method.
+     * Main method that launches the server.
      * @param args
      * @throws IOException
      */

@@ -47,11 +47,16 @@ import com.mongodb.client.MongoDatabase;
  
 /**
  * Helper class for other classes. Used initially to test RESTlessness but changed later.
+ * @author Emil
  */
 public class Resource 
 {
 	static int numRequests = 0;
 	static Random random = new Random(System.nanoTime());
+	/**
+	 * Returns a random resource string.
+	 * @return
+	 */
     static String RandomResourceStr()
     {
     	String[] resourceStr = {"Coal", "Iron", "Steel", "Gold", "Silver", "Copper", "Tin", "Bronze",
@@ -59,7 +64,11 @@ public class Resource
     	return resourceStr[random.nextInt(resourceStr.length) % resourceStr.length];	
     }
 
-	/// Returns e.g. {"Iron":"234"}
+    /**
+     * Returns a random key-value pair of a resource and a value/quantity between 0 and 2000, encapsulated in JSON format.
+	 * E.g. {"Iron":"234"}
+     * @return
+     */
 	public static String RandomResourceAndAmountJSON()
 	{
 		Random r = new Random();
@@ -68,7 +77,12 @@ public class Resource
 			quantity *= -1;
 		return "{\""+RandomResourceStr()+"\":\""+quantity+"\"}";
 	}
-	// Returns e.g. "Coal":"141"
+    /**
+     * Returns a random key-value pair of a resource and a value/quantity between 0 and 2000.
+     * Formatted so that you can add several such pairs into a JSON string.
+	 * E.g. "Coal":"141"
+     * @return
+     */
 	public static String RandomResourceAndAmountPair()
 	{
 		Random r = new Random();

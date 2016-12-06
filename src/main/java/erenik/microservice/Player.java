@@ -31,11 +31,18 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-
+/**
+ * Class for handling requests on the URL /players/ on the server.
+ * @author Emil
+ */
 @Path("players")
 public class Player 
 {
-	
+	/**
+	 * Fetches the list of all player names from the database.
+	 * Looks for values tied to the key "name" in the database documents.
+	 * @return List of names.
+	 */
 	List<String> GetAllPlayerNames()
 	{
 		MongoCursor<Document> iterator = MongoHelper.GetDocumentIterator("players");
@@ -51,7 +58,11 @@ public class Player
 		}
 		return nameList;
 	}
-	
+	/**
+	 * Checks with current player names and checks if the given name already exists or not. Used to maintain idempotency of all CRUD operations.
+	 * @param name
+	 * @return True if it already exists/is registered, false if not.
+	 */
 	boolean AlreadyExists(String name)
 	{
 		List<String> names = GetAllPlayerNames();
@@ -63,7 +74,10 @@ public class Player
 		return false;
 	}
 	
-    /// Getter for players.
+    /**
+     * Implements the GET function for the base url (/players/). Retrieves the list of all players in JSON form.
+     * @return JSON-formatted list with names of all players in the system or null if there are any errors.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllPlayers() 
@@ -88,7 +102,11 @@ public class Player
     	}
     	return null;
     }
-    
+    /**
+     * Implements the GET function for the sub-url /players/{name}/ where the data for the specified player should be retrieved.
+     * @param name
+     * @return JSON-formatted data of the given player or null if it doesn't exist.
+     */
     @GET
     @Path("{name}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -107,7 +125,13 @@ public class Player
     	}
     	return null;
     }
-    /// Getter for resources of a specific player.
+    /**
+     * Implements GET requests for /players/{player}/{resource}/, retrieving the quantity of target resource the player has.
+     * If the player doesn't have the resource requested or there is no player with such a name null is returned.
+     * @param name
+     * @param resource
+     * @return
+     */
     @GET
     @Path("{name}/{resource}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -141,7 +165,11 @@ public class Player
     	}
     	return null;
     }
-    /// Delete a specific player entry.
+    /** 
+     * Delete a specific player entry. Implements DELETE for /players/{name}
+     * @param name
+     * @return OK or noContent responses based on success or failure.
+     */
     @DELETE
     @Path("{name}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -163,10 +191,13 @@ public class Player
     	return Response.noContent().build();
     }
     
-    /// Put! requests. Assume they put something useful.
+    /**
+     * Implements POST requests on the base URL /players/. On success, the new player is added to the database in an own document.
+     * @param jsonInput
+     * @return noContent, ok or notModified responses.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-   // @Path("/result")
     public Response postIt(String jsonInput) 
     {    		
     	// Try and put into MongoDB
@@ -189,7 +220,12 @@ public class Player
 			return Response.noContent().build();
 		}
     }
-    /// For deleting the arbitrary players that we have created.
+    /**
+     * Implements the DELETE request for the base /players/ url.
+     * Deletes all player documents in the database. 
+     * Should probably require some further authentication in a finished system to avoid accidental deletion of all entries.
+     * @return ok or noContent responses.
+     */
     @DELETE
     public Response deleteAll()
     {
